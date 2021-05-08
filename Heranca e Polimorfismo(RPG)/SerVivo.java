@@ -6,8 +6,7 @@ public class SerVivo{
 	protected int defesa;
 	protected int nivel;
 	protected int exp;
-
-	
+	protected int velocidade;
 	public String getNome(){
 		return this.nome;
 	}
@@ -57,4 +56,11 @@ public class SerVivo{
 	public void setExp(int exp){
 		this.exp=exp;
 	}
+	public int getVelocidade(){
+		return this.velocidade;
+	}
+	public void setVelocidade(int velocidade){
+		this.velocidade=velocidade;
+	}
+
 }

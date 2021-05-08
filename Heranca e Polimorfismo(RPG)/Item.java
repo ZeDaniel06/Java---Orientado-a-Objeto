@@ -1,6 +1,6 @@
 public class Item extends Armazenamento{
-	public int codigo;
-	public String nome;
+	private int codigo;
+	private String nome;
 	
 	public Item(){
 		this.codigo=0;

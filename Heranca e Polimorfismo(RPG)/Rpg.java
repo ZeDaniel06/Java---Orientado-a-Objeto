@@ -1,59 +1,33 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 public class Rpg{
-	
-	public static void batalha(Personagem personagem){
-		Scanner ler=new Scanner(System.in);
-		Monstro monstro= new Monstro(personagem);
-		System.out.println("Inimigo Encontrado! "+monstro.getNome());
-		while (monstro.getVidaAtual()>=0){
-			System.out.println("Ataque o Monstro Apertando Enter!");
-			String a=ler.nextLine();
-			monstro.setVidaAtual(monstro.getVidaAtual()-20);
-			System.out.println("Voce Atacou o "+monstro.getNome());
-			System.out.println("Vida Atual do Monstro: "+monstro.getVidaAtual());
-			monstro.revidar(personagem);
-			System.out.println("Vida Atual do Teu Personagem: "+personagem.getVidaAtual());
-			if(monstro.getVidaAtual()<=0){
-				System.out.println("Monstro Derrotado! "+monstro.getExp()+" adquirido...");
-				personagem.setExp(personagem.getExp()+monstro.getExp());
-				personagem.subirNivel();
-			}
-		}
-	}
-	
 	public static void main(String[] args){
 		Scanner ler=new Scanner(System.in);
-		System.out.println("");
 		int menu=50;
-		System.out.println("\n---Seja Bem Vindo Ao Nosso Mini RPG em Java---\n");
-		System.out.println("Para comecar criaremos o seu personagem, informe suas preferencias: ");
-		String nome, classe, raca;
-		System.out.println("Nome do Personagem: ");
-		nome=ler.nextLine();
-		System.out.println("Raca(Pode ser Elfo, Humano, Draconiano, Orc): ");
-		raca=ler.nextLine();
-		System.out.println("Classe(Guerreiro, Ladino, Paladino): ");
-		classe=ler.nextLine();
-		Personagem personagem=new Personagem(nome, raca, classe);
-		System.out.println("Personagem Criado!");
-		while (menu!=4){
+		boolean vivo=true;
+		Personagem personagem=new Personagem();
+		personagem=personagem.criarPersonagem();
+		while (menu!=5){
+			if (vivo==false){
+				personagem=personagem.criarPersonagem();
+			}
+			vivo=true;
 			//Menu geral
 			System.out.println("\n---MENU PRINCIPAL---\n");
 			System.out.println(personagem.getNome()+", O QUE DESEJA FAZER? ");
-			System.out.println("1 - EXIBIR STATUS DO PERSONAGEM\n2 - BATALHAR\n3 - ABRIR INVENTARIO\n4 - SAIR DO JOGO(PROGRESSO NAO SERA SALVO): ");
+			System.out.println("1 - EXIBIR STATUS DO PERSONAGEM\n2 - BATALHAR\n3 - ABRIR INVENTARIO\n4 - SUBIR DE NIVEL\n5 - SAIR DO JOGO(PROGRESSO NAO SERA SALVO): ");
 			menu=ler.nextInt();
 			switch (menu){
 				case 1:
 					personagem.status();
 					break;
 				case 2:
-					batalha(personagem);
+					vivo=batalha(personagem);
 					break;
 				case 3:{
 						//Menu de inventario
 						while (menu!=0){
-							System.out.println("\n---INVENTARIO---\n1 - GUARDAR ITEM\n2 - DROPAR ITEM\n3 - EXIBIR INVENTARIO\n0 - SAIR");
+							System.out.println("\n---INVENTARIO---\n1 - GUARDAR ITEM\n2 - DROPAR ITEM\n3 - USAR ITEM\n4 - EXIBIR INVENTARIO\n0 - SAIR");
 							menu=ler.nextInt();
 							switch (menu){
 								case 1:{
@@ -64,15 +38,18 @@ public class Rpg{
 									item=ler.nextLine();
 									System.out.println("Atribua um numero/codigo a esse item: ");
 									codigo=ler.nextInt();
-									personagem.inventario.guardarItem(new Item(codigo,1,item));
+									personagem.getInventario().guardarItem(new Item(codigo,1,item));
 									System.out.println("Item guardado!");
 								}
 									break;
 								case 2:
-									personagem.inventario.droparItem();
+									personagem.getInventario().droparItem();
 									break;
 								case 3:
-									personagem.inventario.exibirInventario();
+									personagem.getInventario().usarItem(personagem);
+									break;
+								case 4:
+									personagem.getInventario().exibirInventario();
 									break;
 								case 0:
 									System.out.println("Saindo...");
@@ -84,12 +61,50 @@ public class Rpg{
 						}
 				}
 				case 4:
-					System.out.println("Fechando Jogo...");
+					personagem.subirNivel();
+					break;
+				case 5:
+					System.out.println("Saindo do jogo...");
 					break;
 				default:
 					System.out.println("Escolha uma opcao valida...");
+					break;
 			}
 		}
 	}
-		//
+		//Metodo de Batalha
+		public static boolean batalha(Personagem personagem){
+		Scanner ler=new Scanner(System.in);
+		int decisao;
+		Monstro monstro= new Monstro(personagem);
+		System.out.println("\nInimigo Encontrado! "+monstro.getNome());
+		while (monstro.getVidaAtual()>0){
+			if(personagem.getVidaAtual()<=0){
+				System.out.println("Seu personagem morreu lutando bravamente... Reiniciando jogo...");
+				return false;
+			}
+			System.out.println("\nVida Atual do Teu Personagem: "+personagem.getVidaAtual());
+			System.out.println("Vida Atual do Monstro: "+monstro.getVidaAtual());
+			System.out.println("\nO que fazer?\n1 - Atacar\n2 - Usar Item\n");
+			decisao=ler.nextInt();
+			switch (decisao){
+				case 1:
+					if(personagem.getVelocidade()>=monstro.getVelocidade()){
+						personagem.atacar(monstro);
+						monstro.atacar(personagem);
+					}else{
+						monstro.atacar(personagem);
+						personagem.atacar(monstro);
+					}
+					break;
+				case 2:
+					personagem.getInventario().usarItem(personagem);
+					break;
+				default:
+					System.out.println("Digite uma opcao valida...");
+					break;
+			}
+		}
+		return true;
+	}
 	}
