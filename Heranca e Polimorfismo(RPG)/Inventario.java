@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import javax.swing.JOptionPane;
 public class Inventario extends Armazenamento{
 	private ArrayList<Item> espaco= new ArrayList<Item>();
 	Scanner ler=new Scanner(System.in);
@@ -24,43 +26,45 @@ public class Inventario extends Armazenamento{
 		}
 	}
 	public void usarItem(Personagem personagem){
-		for(int i=0;i<this.getTamanho();i++){
-			if (this.getEspaco().get(i).getCodigo()!=0){
-				System.out.println("Nome: "+this.getEspaco().get(i).getNome()+"\nCodigo: "+this.getEspaco().get(i).getCodigo());
-			}
-		}
-		System.out.println("Codigo do item que deseja usar? ");
-		int codigo=ler.nextInt();
+		Object[] item= {"Poção +25 hp","Poção +50 hp"};
+		int codigo=JOptionPane.showOptionDialog(null, "Qual Item Deseja Usar?", "RPG", 0, 0, null, item, item[0]);
+		codigo+=1;
 		boolean uso=this.droparItem(codigo);
 		if(uso){
 			if (codigo==1){
 				personagem.setVidaAtual(personagem.getVidaAtual()+25);
-				System.out.println("Item usado!");
+				JOptionPane.showMessageDialog(null,"Item usado!");
 				if (personagem.getVidaAtual()>personagem.getVidaTotal()){
 					personagem.setVidaAtual(personagem.getVidaTotal());
 				}
 			}else if (codigo==2){
 				personagem.setVidaAtual(personagem.getVidaAtual()+50);
-				System.out.println("Item usado!");
+				JOptionPane.showMessageDialog(null,"Item usado!");
 				if (personagem.getVidaAtual()>personagem.getVidaTotal()){
 					personagem.setVidaAtual(personagem.getVidaTotal());
 				}
 			}
 		}else{
-			System.out.println("Item nao encontrado no inventario!");
+			JOptionPane.showMessageDialog(null,"Item nao encontrado no inventario!");
 		}
 	}
 	public void droparItem(){
-		System.out.println("Codigo do item a dropar: ");
-		int codigo=ler.nextInt();
+		String a="";
+		for(int i=0;i<this.getTamanho();i++){
+			if (this.getEspaco().get(i).getCodigo()!=0){
+				a=a+"Nome: "+this.getEspaco().get(i).getNome()+"\nCodigo: "+this.getEspaco().get(i).getCodigo()+"\n";
+			}
+		}
+		JOptionPane.showMessageDialog(null, a);
+		int codigo=Integer.parseInt(JOptionPane.showInputDialog("Codigo do item a dropar:"));
 		for (int i=0;i<espaco.size();i++){
 			if (this.espaco.get(i).getCodigo()==codigo){
 				this.espaco.set(i,new Item());
-				System.out.println("Item dropado!");
+				JOptionPane.showMessageDialog(null,"Item dropado!");
 				return;
 			}
 		}
-		System.out.println("Item nao encontrado no inventario!");
+		JOptionPane.showMessageDialog(null,"Item nao encontrado no inventario!");
 	}
 	public boolean droparItem(int codigo){
 		for (int i=0;i<espaco.size();i++){
@@ -76,10 +80,16 @@ public class Inventario extends Armazenamento{
 	}
 	
 	public void exibirInventario(){
-		System.out.println("\n---INVENTARIO---\n-------");
-		for (int i=0;i<this.espaco.size();i++){
-			System.out.println("NOME: "+this.espaco.get(i).getNome()+"\nCODIGO: "+this.espaco.get(i).getCodigo()+"\nTAMANHO: "+this.espaco.get(i).tamanho+"\n-------\n");
-		}
+		int vazio=0;
+		String a="---INVENTARIO---\n\n";
+		for(int i=0;i<this.getTamanho();i++){
+			if (this.getEspaco().get(i).getCodigo()!=0){
+				a=a+"Nome: "+this.getEspaco().get(i).getNome()+"\nCodigo: "+this.getEspaco().get(i).getCodigo()+"\n";
+			}else{
+				vazio+=1;
+			}
+		}a=a+"\n\n"+"Espaco Total: 32\nEspaco Livre: "+vazio;
+		JOptionPane.showMessageDialog(null, a);
 	}
 	
 }

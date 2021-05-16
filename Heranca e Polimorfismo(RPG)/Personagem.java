@@ -1,4 +1,5 @@
 import java.util.Random;
+import javax.swing.JOptionPane;
 import java.util.Scanner;
 public class Personagem extends SerVivo{
 	Scanner ler=new Scanner(System.in);
@@ -6,7 +7,7 @@ public class Personagem extends SerVivo{
 	private Inventario inventario=new Inventario();
 	private String raca;
 	private String classe;
-	Item arma= new Item();
+	private Item arma= new Item();
 	public Personagem(){
 		
 	}
@@ -28,52 +29,48 @@ public class Personagem extends SerVivo{
 	}
 	
 	public Personagem criarPersonagem(){
-		System.out.println("\n---Seja Bem Vindo Ao Nosso Mini RPG em Java---\n");
-		System.out.println("Para comecar criaremos o seu personagem, informe suas preferencias: ");
-		String nome, classe="a", raca="a";
-		System.out.println("Nome do Personagem: ");
-		nome=ler.nextLine();
+		Object[] option= {"Elfo","Humano"};
+		String nome=JOptionPane.showInputDialog(null,"\n---Seja Bem Vindo Ao Nosso Mini RPG em Java---\n"+"Para comecar criaremos o seu personagem, informe suas preferencias: \n"
+				+ "Nome do Personagem:");
+		String classe="a", raca="a";
 		int escolha=4, bonus=0, extra=0;
-		while(escolha<1 || escolha>2){
-			System.out.println("Raca(Pode ser: 1 - Elfo, 2 - Humano): ");
-			escolha=ler.nextInt();
-			switch (escolha){
-				case 1:
-				raca="Elfo";
-				bonus=2;
-				extra=4;
-				break;
-				case 2:
-				raca="Humano";
-				bonus=4;
-				extra=2;
-				break;
-				default:
-				System.out.println("Escolha uma opcao valida.");
-				break;
-			}
+		escolha=JOptionPane.showOptionDialog(null, "Raça do Personagem", "RPG", 0, 2, null, option, option[0]);
+		switch (escolha){
+			case 0:
+			raca="Elfo";
+			bonus=2;
+			extra=4;
+			break;
+			case 1:
+			raca="Humano";
+			bonus=4;
+			extra=2;
+			break;
+			default:
+			System.exit(0);
+			break;
 		}
 		escolha=4;
 		Item arma=new Item();
-		while(escolha<1 || escolha>2){
-			System.out.println("Classe(1 - Guerreiro, 2 - Mago): ");
-			escolha=ler.nextInt();
-			switch (escolha){
-				case 1:
+		option[0]= "Guerreiro";
+		option[1]= "Mago";
+		escolha=JOptionPane.showOptionDialog(null, "Classe do Personagem:", "RPG", 0, 0, null, option, option[0]);
+		switch (escolha){
+			case 0:
 				classe="Guerreiro";
 				arma=new Item(5,3,"Espada de Ferro");
 				break;
-				case 2:
+			case 1:
 				classe="Mago";
 				arma=new Item(6,2,"Cajado Magico");
 				break;
-				default:
-				System.out.println("Escolha uma opcao valida.");
+			default:
+				System.exit(0);
 				break;
 			}
-		}
 		Personagem personagem=new Personagem(nome, raca, classe, bonus, extra, arma);
-		System.out.println("Personagem Criado!");
+		Object[] op= {"Continuar"};
+		JOptionPane.showOptionDialog(null, "Personagem Criado!", "RPG", 0, 2, null, op, op[0]);
 		return personagem;
 	}
 	
@@ -92,44 +89,47 @@ public class Personagem extends SerVivo{
 	}
 	public void subirNivel(){
 		if(this.exp<(this.nivel*this.nivel)){
-			System.out.println("Exp insuficiente para subir de nivel...");
+			JOptionPane.showMessageDialog(null,"Exp insuficiente para subir de nivel...");
 		}else{
-			this.setExp(this.getExp()-(this.getNivel()*2));
+			this.setExp(this.getExp()-(this.getExp()*this.getExp()));
+			if (this.getExp()<0) {
+				this.setExp(0);
+			}
 			this.setNivel(this.getNivel()+1);
-			this.setForca(25+(this.nivel*5));
-			this.setDefesa(25+(this.nivel*5));
-			this.setVidaTotal(100+(this.nivel*10));
+			this.setForca(this.getForca()+(this.nivel*5));
+			this.setDefesa(this.getDefesa()+(this.nivel*5));
+			this.setVidaTotal(this.getVidaTotal()+(this.nivel*10));
 			this.setVidaAtual(this.getVidaAtual()+50);
 			if (this.getVidaAtual()>this.getVidaTotal()){
 				this.setVidaAtual(this.getVidaTotal());
 			}
-			System.out.println("Subiu para o nivel "+this.getNivel());
+			JOptionPane.showMessageDialog(null,"Subiu para o nivel "+this.getNivel());
 		}
 	}
 	public void status(){
 		String texto="\n---STATUS---\nNome: "+this.getNome()+"\nRaca: "+this.getRaca()+"\nClasse: "+this.getClasse()+"\nVida Total: "
 		+this.getVidaTotal()+"\nVida Atual: "+this.getVidaAtual()+"\nForca: "+this.getForca()+"\nDefesa: "+this.getDefesa()+"\nNivel: "
 		+this.getNivel()+"\nArma: "+this.getArma().getNome()+"\nExp: "+this.getExp()+"\n";
-		System.out.println(texto);
+		JOptionPane.showMessageDialog(null,texto);
 	}
 	
 	public void atacar(Monstro monstro){
 		boolean acerto=random.nextBoolean();
 		if (acerto){
 			monstro.setVidaAtual(monstro.getVidaAtual()-(this.forca-((int)(monstro.getDefesa()/2))));
-			System.out.println("Voce Atacou o "+monstro.getNome());
+			JOptionPane.showMessageDialog(null,"Voce Atacou o "+monstro.getNome());
 			if(monstro.getVidaAtual()<=0){
-				System.out.println("\nMonstro Derrotado! "+monstro.getExp()+" EXP adquirido...");
+				JOptionPane.showMessageDialog(null,"\nMonstro Derrotado! "+monstro.getExp()+" EXP adquirido...");
 				this.setExp(this.getExp()+monstro.getExp());
 				this.subirNivel();
 				int item=random.nextInt(3);
 				switch (item){
 					case 0:
-					System.out.println("Parabens, voce ganhou uma pocao +50hp!");
+					JOptionPane.showMessageDialog(null,"Parabens, voce ganhou uma pocao +50hp!");
 					this.inventario.guardarItem(new Item(2,1,"Pocao +50hp"));
 					break;
 					case 1:
-					System.out.println("Parabens, voce ganhou uma pocao +25hp!");
+					JOptionPane.showMessageDialog(null,"Parabens, voce ganhou uma pocao +25hp!");
 					this.inventario.guardarItem(new Item(1,1,"Pocao +25hp"));
 					break;
 					case 2:
@@ -137,7 +137,7 @@ public class Personagem extends SerVivo{
 				}
 			}
 		}else{
-			System.out.println("Voce Errou o Ataque!");
+			JOptionPane.showMessageDialog(null,"Voce Errou o Ataque!");
 		}
 	}
 	public Inventario getInventario(){

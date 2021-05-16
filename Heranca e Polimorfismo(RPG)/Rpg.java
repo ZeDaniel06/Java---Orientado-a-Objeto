@@ -1,45 +1,38 @@
-import java.util.ArrayList;
-import java.util.Scanner;
+import javax.swing.JOptionPane;
 public class Rpg{
 	public static void main(String[] args){
-		Scanner ler=new Scanner(System.in);
 		int menu=50;
 		boolean vivo=true;
 		Personagem personagem=new Personagem();
 		personagem=personagem.criarPersonagem();
-		while (menu!=5){
+		Object[] menuPrincipal= {"STATUS DO PERSONAGEM","BATALHAR","ABRIR INVENTARIO","SUBIR DE NIVEL","SAIR DO JOGO"};
+		while (menu!=4){
 			if (vivo==false){
 				personagem=personagem.criarPersonagem();
 			}
 			vivo=true;
 			//Menu geral
-			System.out.println("\n---MENU PRINCIPAL---\n");
-			System.out.println(personagem.getNome()+", O QUE DESEJA FAZER? ");
-			System.out.println("1 - EXIBIR STATUS DO PERSONAGEM\n2 - BATALHAR\n3 - ABRIR INVENTARIO\n4 - SUBIR DE NIVEL\n5 - SAIR DO JOGO(PROGRESSO NAO SERA SALVO): ");
-			menu=ler.nextInt();
+			menu=JOptionPane.showOptionDialog(null, "MENU PRINCIPAL", "RPG", 0, 2, null, menuPrincipal, menuPrincipal[0]);
 			switch (menu){
-				case 1:
+				case 0:
 					personagem.status();
 					break;
-				case 2:
+				case 1:
 					vivo=batalha(personagem);
 					break;
-				case 3:{
+				case 2:{
 						//Menu de inventario
-						while (menu!=0){
-							System.out.println("\n---INVENTARIO---\n1 - GUARDAR ITEM\n2 - DROPAR ITEM\n3 - USAR ITEM\n4 - EXIBIR INVENTARIO\n0 - SAIR");
-							menu=ler.nextInt();
+					Object[] menuInventario= {"GUARDAR ITEM","DROPAR ITEM","USAR ITEM","EXIBIR INVENTARIO","FECHAR"};
+						while (menu!=5){
+							menu=JOptionPane.showOptionDialog(null, "---INVENTARIO---", "RPG", 0, 0, null, menuInventario, menuInventario[0])+1;
 							switch (menu){
 								case 1:{
 									String item;
 									int codigo;
-									ler.nextLine();
-									System.out.println("Nome do Item: ");
-									item=ler.nextLine();
-									System.out.println("Atribua um numero/codigo a esse item: ");
-									codigo=ler.nextInt();
+									item=JOptionPane.showInputDialog("Nome do Item: ");
+									codigo=Integer.parseInt(JOptionPane.showInputDialog("Atribua um numero/codigo a esse item: "));
 									personagem.getInventario().guardarItem(new Item(codigo,1,item));
-									System.out.println("Item guardado!");
+									JOptionPane.showMessageDialog(null,"Item guardado!");
 								}
 									break;
 								case 2:
@@ -51,44 +44,43 @@ public class Rpg{
 								case 4:
 									personagem.getInventario().exibirInventario();
 									break;
-								case 0:
-									System.out.println("Saindo...");
+								case 5:
+									JOptionPane.showMessageDialog(null,"Fechando Inventario...");
 									break;
 								default:
-									System.out.println("Escolha uma opcao valida...");
+									JOptionPane.showMessageDialog(null,"Saindo do Jogo...");
+									System.exit(0);
 									break;
 							}
 						}
-				}
-				case 4:
+				}break;
+				case 3:
 					personagem.subirNivel();
 					break;
-				case 5:
-					System.out.println("Saindo do jogo...");
+				case 4:
+					JOptionPane.showMessageDialog(null,"Saindo do jogo...");
 					break;
 				default:
-					System.out.println("Escolha uma opcao valida...");
+					JOptionPane.showMessageDialog(null,"Saindo do jogo...");
 					break;
 			}
 		}
 	}
 		//Metodo de Batalha
 		public static boolean batalha(Personagem personagem){
-		Scanner ler=new Scanner(System.in);
 		int decisao;
+		Object[] agir= {"Atacar","Usar Item"};
 		Monstro monstro= new Monstro(personagem);
-		System.out.println("\nInimigo Encontrado! "+monstro.getNome());
+		JOptionPane.showMessageDialog(null,"Inimigo Encontrado! "+monstro.getNome());
 		while (monstro.getVidaAtual()>0){
 			if(personagem.getVidaAtual()<=0){
-				System.out.println("Seu personagem morreu lutando bravamente... Reiniciando jogo...");
+				JOptionPane.showMessageDialog(null,"Seu personagem morreu lutando bravamente... Reiniciando jogo...");
 				return false;
 			}
-			System.out.println("\nVida Atual do Teu Personagem: "+personagem.getVidaAtual());
-			System.out.println("Vida Atual do Monstro: "+monstro.getVidaAtual());
-			System.out.println("\nO que fazer?\n1 - Atacar\n2 - Usar Item\n");
-			decisao=ler.nextInt();
+			JOptionPane.showMessageDialog(null,"\nVida Atual do Teu Personagem: "+personagem.getVidaAtual()+"\nVida Atual do Monstro: "+monstro.getVidaAtual());
+			decisao=JOptionPane.showOptionDialog(null, "O que fazer?", "RPG", 0, 0, null, agir, agir[0]);
 			switch (decisao){
-				case 1:
+				case 0:
 					if(personagem.getVelocidade()>=monstro.getVelocidade()){
 						personagem.atacar(monstro);
 						monstro.atacar(personagem);
@@ -97,11 +89,12 @@ public class Rpg{
 						personagem.atacar(monstro);
 					}
 					break;
-				case 2:
+				case 1:
 					personagem.getInventario().usarItem(personagem);
 					break;
 				default:
-					System.out.println("Digite uma opcao valida...");
+					JOptionPane.showMessageDialog(null,"Saindo do jogo...");
+					System.exit(0);
 					break;
 			}
 		}
